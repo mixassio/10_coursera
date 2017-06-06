@@ -20,16 +20,21 @@ def get_courses_list():
 
 
 def get_course_info(url):
-    r = requests.get(url)
-    soup = bs4.BeautifulSoup(r.content, "lxml")
+    coursera = requests.get(url)
+    soup = bs4.BeautifulSoup(coursera.content, "lxml")
     content = soup.findAll('script', {'type': 'application/ld+json'})
 
     name_course = soup.html.head.title.string
     count_week = len(soup.findAll('div', {'class': 'week-heading body-2-text'}))
+    
     date_start = re.findall('"startDate":"(\d\d\d\d-\d\d-\d\d)', str(content))
-    date_end = re.findall('"endDate":"(\d\d\d\d-\d\d-\d\d)', str(content))
+    date_start = date_start[0] if bool(date_start) else ''
+
     lang_course = re.findall('"inLanguage":"(\w\w)', str(content))
+    lang_course = lang_course[0] if bool(lang_course) else ''
+
     rating_course = re.findall('"ratingValue":(\d.\d)', str(content))
+    rating_course = rating_course[0] if bool(rating_course) else ''
     return name_course, lang_course, date_start, count_week, rating_course
 
 
@@ -44,19 +49,10 @@ def output_courses_info_to_xlsx(filepath, list_value):
     line_sheet = 2
     for course_value in list_value:
         ws['A' + str(line_sheet)] = course_value[0]
-        try:
-            ws['B' + str(line_sheet)] = course_value[1][0]
-        except IndexError:
-            ws['B' + str(line_sheet)] = ''
-        try:
-            ws['C' + str(line_sheet)] = course_value[2][0]
-        except IndexError:
-            ws['C' + str(line_sheet)] = ''
+        ws['B' + str(line_sheet)] = course_value[1]
+        ws['C' + str(line_sheet)] = course_value[2]
         ws['D' + str(line_sheet)] = course_value[3]
-        try:
-            ws['E' + str(line_sheet)] = course_value[4][0]
-        except IndexError:
-            ws['E' + str(line_sheet)] = ''
+        ws['E' + str(line_sheet)] = course_value[4]
         line_sheet += 1
     wb.save(filepath)
 
