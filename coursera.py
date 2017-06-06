@@ -1,3 +1,4 @@
+
 import re
 import lxml.etree as etree
 import bs4
@@ -9,13 +10,14 @@ def get_courses_list():
     raw_xml = requests.get('https://www.coursera.org/sitemap~www~courses.xml').content
     parser_xml = etree.XMLParser(remove_blank_text=True)
     root_xml = etree.fromstring(raw_xml, parser_xml)
-    count_course = 200
+    count_course = 20
     list_course = []
     for index, course in enumerate(root_xml):
         if count_course:
             list_course.append(course[0].text)
             count_course -= 1
     return list_course
+
 
 def get_course_info(url):
     r = requests.get(url)
@@ -60,10 +62,9 @@ def output_courses_info_to_xlsx(filepath, list_value):
 
 
 if __name__ == '__main__':
+
     list_value_course = []
     list_url_course = get_courses_list()
     for course in list_url_course:
         list_value_course.append(get_course_info(course))
     output_courses_info_to_xlsx('./sample.xlsx', list_value_course)
-#'https://www.coursera.org/learn/astrofizika'
-#'https://www.coursera.org/learn/matematika-dlya-vseh'
