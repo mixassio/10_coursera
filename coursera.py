@@ -10,31 +10,28 @@ def get_courses_list():
     raw_xml = requests.get('https://www.coursera.org/sitemap~www~courses.xml').content
     parser_xml = etree.XMLParser(remove_blank_text=True)
     root_xml = etree.fromstring(raw_xml, parser_xml)
-    count_course = 20
     list_course = []
-    for index, course in enumerate(root_xml):
-        if count_course:
-            list_course.append(course[0].text)
-            count_course -= 1
+    for index in range(0,19):
+        list_course.append(root_xml[index][0].text)
     return list_course
 
 
 def get_course_info(url):
     coursera = requests.get(url)
     soup = bs4.BeautifulSoup(coursera.content, "lxml")
-    content = soup.findAll('script', {'type': 'application/ld+json'})
+    content = str(soup.findAll('script', {'type': 'application/ld+json'}))
 
     name_course = soup.html.head.title.string
     count_week = len(soup.findAll('div', {'class': 'week-heading body-2-text'}))
-    
-    date_start = re.findall('"startDate":"(\d\d\d\d-\d\d-\d\d)', str(content))
-    date_start = date_start[0] if bool(date_start) else ''
 
-    lang_course = re.findall('"inLanguage":"(\w\w)', str(content))
-    lang_course = lang_course[0] if bool(lang_course) else ''
+    date_start = re.findall('"startDate":"(\d\d\d\d-\d\d-\d\d)', content)
+    date_start = date_start[0] if date_start else ''
 
-    rating_course = re.findall('"ratingValue":(\d.\d)', str(content))
-    rating_course = rating_course[0] if bool(rating_course) else ''
+    lang_course = re.findall('"inLanguage":"(\w\w)', content)
+    lang_course = lang_course[0] if lang_course else ''
+
+    rating_course = re.findall('"ratingValue":(\d.\d)', content)
+    rating_course = rating_course[0] if rating_course else ''
     return name_course, lang_course, date_start, count_week, rating_course
 
 
