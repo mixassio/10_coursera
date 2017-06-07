@@ -1,4 +1,3 @@
-
 import re
 import lxml.etree as etree
 import bs4
