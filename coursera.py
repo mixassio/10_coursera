@@ -10,8 +10,8 @@ def get_courses_list():
     parser_xml = etree.XMLParser(remove_blank_text=True)
     root_xml = etree.fromstring(raw_xml, parser_xml)
     list_course = []
-    for index in range(0,19):
-        list_course.append(root_xml[index][0].text)
+    for course in root_xml[:19]:
+        list_course.append(course[0].text)
     return list_course
 
 
